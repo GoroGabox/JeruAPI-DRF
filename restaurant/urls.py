@@ -1,5 +1,5 @@
 from rest_framework.routers import DefaultRouter
-from ingredientes.views import IngredienteViewSet, CategoriaViewSet, ProductoViewSet, ProductoIngredienteViewSet, PedidoViewSet, PedidoProductoViewSet
+from restaurant.views import IngredienteViewSet, CategoriaViewSet, ProductoViewSet, ProductoIngredienteViewSet, PedidoViewSet, PedidoProductoViewSet
 
 router = DefaultRouter()
 router.register(r'ingredientes', IngredienteViewSet)
