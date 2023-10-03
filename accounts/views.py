@@ -25,7 +25,7 @@ class UserModelViewSet(ModelViewSet):
 class RolModelViewSet(ModelViewSet):
     queryset = Rol.objects.all()
     serializer_class = RolSerializer
-    permission_classes = []
+    permission_classes = [IsAdminUser]
 
 
 class UserRegisterView(CreateAPIView):

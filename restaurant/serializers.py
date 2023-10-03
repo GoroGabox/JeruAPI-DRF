@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from restaurant.models import Ingrediente, Categoria, Producto, ProductoIngrediente, Pedido, PedidoProducto, EstadoPedido
 
+
 class EstadoPedidoSerializer(serializers.ModelSerializer):
     class Meta:
         model = EstadoPedido
@@ -11,6 +12,7 @@ class IngredienteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ingrediente
         fields = '__all__'
+
 
 class IngredienteSimpleSerializer(serializers.ModelSerializer):
     class Meta:
@@ -35,7 +37,8 @@ class ProductoSerializer(serializers.ModelSerializer):
         queryset = obj.ingredientes.all()
         serializer = IngredienteSimpleSerializer(queryset, many=True)
         return serializer.data
-    
+
+
 class ProductoSimpleSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -55,7 +58,7 @@ class PedidoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Pedido
         fields = '__all__'
-    
+
     def get_productos(self, obj):
         queryset = obj.productos.all()
         serializer = ProductoSimpleSerializer(queryset, many=True)

@@ -9,7 +9,7 @@ User = get_user_model()
 class RolSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rol
-        fields = ('__all__')
+        fields = '__all__'
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -17,7 +17,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('nombre', 'apellido', 'email', 'rol')
+        fields = ('id', 'nombre', 'apellido', 'email', 'rol')
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):
@@ -45,9 +45,11 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         return data
 
     def create(self, validated_data):
-        # Eliminar el campo `password2` antes de crear el usuario
-        validated_data.pop('password2', None)
-        return super().create(validated_data)
+        password = validated_data.pop('password2', None)
+        user = super().create(validated_data)
+        user.set_password(password)
+        user.save()
+        return user
 
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -59,7 +61,6 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         token['nombre'] = user.nombre
         token['apellido'] = user.apellido
         token['email'] = user.email
-        token['rol'] = user.rol
-        # ...
+        token['rol'] = user.rol.id
 
         return token
