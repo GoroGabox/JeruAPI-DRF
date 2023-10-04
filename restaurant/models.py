@@ -32,6 +32,8 @@ class Producto(models.Model):
     nombre = models.CharField(max_length=255)
     abreviacion = models.CharField(max_length=10)
     precio = models.PositiveIntegerField()
+    ingredientes = models.ManyToManyField(
+        Ingrediente, through='ProductoIngrediente')
 
     def __str__(self):
         return self.nombre
@@ -49,6 +51,7 @@ class Pedido(models.Model):
     estado = models.CharField(max_length=255)
     nombre_cliente = models.CharField(max_length=255, null=True)
     mesa = models.PositiveIntegerField(null=True)
+    productos = models.ManyToManyField(Producto, through='PedidoProducto')
 
     def __str__(self):
         return f'{self.usuario} #{self.id}'
