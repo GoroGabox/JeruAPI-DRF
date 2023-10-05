@@ -32,7 +32,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     nombre = models.CharField(max_length=30)
     apellido = models.CharField(max_length=30)
     email = models.EmailField(max_length=255, unique=True)
-    rol = models.ForeignKey(Rol, on_delete=models.DO_NOTHING, null=True)
+    rol = models.ForeignKey(Rol, on_delete=models.DO_NOTHING)
     is_staff = models.BooleanField(default=False)
 
     USERNAME_FIELD = 'email'

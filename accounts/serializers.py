@@ -13,11 +13,23 @@ class RolSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    rol = RolSerializer()
+    rol = serializers.CharField(source='rol.nombre')
 
     class Meta:
         model = User
         fields = ('id', 'nombre', 'apellido', 'email', 'rol')
+
+    def update(self, user, validated_data):
+        rol_id = validated_data.pop('rol_id', None)
+        if rol_id is not None:
+            user.rol_id = rol_id
+
+        user.nombre = validated_data.get('nombre', user.nombre)
+        user.apellido = validated_data.get('apellido', user.apellido)
+        user.email = validated_data.get('email', user.email)
+        user.save()
+
+        return user
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):

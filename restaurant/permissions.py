@@ -7,13 +7,13 @@ class RoleBasedPermission(permissions.BasePermission):
             return True
 
         allowed_roles = {
-            'IngredientesViewSet': [1, 2, 3],
-            'CategoriasViewSet': [1, 2, 3],
-            'PedidosViewSet': [1, 2, 3],
-            'ProductosViewSet': [1, 2, 3],
+            'IngredienteViewSet': [1, 2, 3],
+            'CategoriaViewSet': [1, 2, 3],
+            'PedidoViewSet': [1, 2, 3],
+            'ProductoViewSet': [1, 2, 3],
         }
 
-        return request.user.rol.nombre in allowed_roles.get(view.__class__.__name__, [])
+        return request.user.rol.id in allowed_roles.get(view.__class__.__name__, [])
 
     def has_object_permission(self, request, view, obj):
         if request.user.rol.id == 4:
