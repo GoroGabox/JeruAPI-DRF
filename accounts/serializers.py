@@ -13,16 +13,20 @@ class RolSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    rol = serializers.CharField(source='rol.nombre')
+    rol = serializers.CharField(source='rol.nombre', read_only=True)
+    rol_id = serializers.IntegerField(write_only=True, required=False)
 
     class Meta:
         model = User
-        fields = ('id', 'nombre', 'apellido', 'email', 'rol')
+        fields = ('id', 'nombre', 'apellido', 'email', 'rol', 'rol_id')
 
     def update(self, user, validated_data):
+        print(f"validated_data: {validated_data}")
         rol_id = validated_data.pop('rol_id', None)
+        print(f"rol_id: {rol_id}")
         if rol_id is not None:
             user.rol_id = rol_id
+            print(f"user.rol_id: {user.rol_id}")
 
         user.nombre = validated_data.get('nombre', user.nombre)
         user.apellido = validated_data.get('apellido', user.apellido)
@@ -69,7 +73,6 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     def get_token(cls, user):
         token = super().get_token(user)
 
-        # Add custom claims
         token['nombre'] = user.nombre
         token['apellido'] = user.apellido
         token['email'] = user.email
