@@ -86,9 +86,10 @@ class PedidoSerializer(serializers.ModelSerializer):
         return serializer.data
 
     def create(self, validated_data):
-        print(f"validated_data: {validated_data}")
         productos_data = validated_data.pop('productos_post')
-        print(f"productos_data: {productos_data}")
+        if not productos_data:
+            raise serializers.ValidationError(
+                "Un pedido debe tener al menos un producto")
         pedido = Pedido.objects.create(**validated_data)
 
         for producto_data in productos_data:
@@ -100,13 +101,22 @@ class PedidoSerializer(serializers.ModelSerializer):
                 precio_salida=producto.precio),
         return pedido
 
-    def update(self, instance, validated_data):
-        instance.estado = validated_data.get('estado', instance.estado)
-        instance.mesa = validated_data.get('mesa', instance.mesa)
-        instance.usuario = validated_data.get('usuario', instance.usuario)
-        instance.save()
+    def update(self, pedido, validated_data):
+        # Crea instancia de Pedido
+        pedido.estado = validated_data.get('estado', pedido.estado)
+        pedido.mesa = validated_data.get('mesa', pedido.mesa)
+        pedido.usuario = validated_data.get('usuario', pedido.usuario)
+        pedido.save()
 
+        # Revisa si hay productos en el pedido
         productos_data = validated_data.pop('productos_post', [])
+        productos_existentes = PedidoProducto.objects.filter(
+            pedido=pedido).count()
+        if not productos_data and productos_existentes == 0:
+            raise serializers.ValidationError(
+                "Un pedido debe tener al menos un producto")
+
+        # Actualiza los productos del pedido
         for producto_data in productos_data:
             producto_id = producto_data.get('id')
             cantidad = producto_data.get('cantidad')
@@ -114,10 +124,10 @@ class PedidoSerializer(serializers.ModelSerializer):
                 producto = Producto.objects.get(id=producto_id)
             except Producto.DoesNotExist:
                 raise serializers.ValidationError(
-                    f"Producto with ID {producto_id} does not exist.")
+                    f"No existe un Producto con ID {producto_id}.")
 
             pedido_producto, created = PedidoProducto.objects.get_or_create(
-                pedido=instance,
+                pedido=pedido,
                 producto=producto,
                 defaults={'cantidad': cantidad,
                           'precio_salida': producto.precio}
@@ -128,4 +138,4 @@ class PedidoSerializer(serializers.ModelSerializer):
                 pedido_producto.precio_salida = producto.precio
                 pedido_producto.save()
 
-        return instance
+        return pedido
