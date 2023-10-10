@@ -19,7 +19,7 @@ class RoleBasedPermission(permissions.BasePermission):
         if request.user.rol.id == 4:
             return True
 
-        if view.__class__.__name__ == 'PedidosViewSet' and request.method in ['GET', 'POST', 'PUT']:
+        if view.__class__.__name__ == 'PedidoViewSet' and request.method in ['GET', 'POST', 'PUT']:
             return request.user.rol.id in [1, 2, 3]
 
         return False
