@@ -5,16 +5,19 @@ User = get_user_model()
 
 # Create your models here.
 
+
 class EstadoPedido(models.Model):
     nombre = models.CharField(max_length=255)
 
     def __str__(self):
         return self.nombre
 
+
 class Ingrediente(models.Model):
     nombre = models.CharField(max_length=255)
     cantidad_disponible = models.PositiveIntegerField()
     cantidad_critica = models.PositiveIntegerField()
+    unidad = models.CharField(max_length=16)
 
     def __str__(self):
         return self.nombre
