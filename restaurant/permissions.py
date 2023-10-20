@@ -2,7 +2,12 @@ from rest_framework import permissions
 
 
 class RoleBasedPermission(permissions.BasePermission):
+    habilitado = False
+
     def has_permission(self, request, view):
+        if not self.habilitado:
+            return True
+
         if request.user.rol.id == 4:
             return True
 
@@ -16,6 +21,9 @@ class RoleBasedPermission(permissions.BasePermission):
         return request.user.rol.id in allowed_roles.get(view.__class__.__name__, [])
 
     def has_object_permission(self, request, view, obj):
+        if not self.habilitado:
+            return True
+
         if request.user.rol.id == 4:
             return True
 
