@@ -17,7 +17,7 @@ class EstadoPedidoViewSet(ModelViewSet):
 class IngredienteViewSet(ModelViewSet):
     queryset = Ingrediente.objects.all()
     serializer_class = IngredienteSerializer
-    permission_classes = [RoleBasedPermission]
+    # permission_classes = [RoleBasedPermission]
 
 
 class IngredienteSimpleViewSet(ModelViewSet):
@@ -33,13 +33,13 @@ class IngredienteSimpleViewSet(ModelViewSet):
 class CategoriaViewSet(ModelViewSet):
     queryset = Categoria.objects.all()
     serializer_class = CategoriaSerializer
-    permission_classes = [RoleBasedPermission]
+    # permission_classes = [RoleBasedPermission]
 
 
 class ProductoViewSet(ModelViewSet):
     queryset = Producto.objects.all()
     serializer_class = ProductoSerializer
-    permission_classes = [RoleBasedPermission]
+    # permission_classes = [RoleBasedPermission]
 
 
 class ProductoSimpleViewSet(ModelViewSet):
@@ -55,28 +55,15 @@ class ProductoSimpleViewSet(ModelViewSet):
 class ProductoIngredienteViewSet(ModelViewSet):
     queryset = ProductoIngrediente.objects.all()
     serializer_class = ProductoIngredienteSerializer
-    permission_classes = [IsAdminUser]
+    # permission_classes = [IsAdminUser]
 
 
 class PedidoViewSet(ModelViewSet):
     queryset = Pedido.objects.all()
     serializer_class = PedidoSerializer
-    permission_classes = [RoleBasedPermission]
-
-    @transaction.atomic
-    def create(self, request, *args, **kwargs):
-        return super().create(request, *args, **kwargs)
-
-    @transaction.atomic
-    def update(self, request, *args, **kwargs):
-        return super().update(request, *args, **kwargs)
-
-    @transaction.atomic
-    def destroy(self, request, *args, **kwargs):
-        return super().destroy(request, *args, **kwargs)
-
+    # permission_classes = [RoleBasedPermission]
 
 class PedidoProductoViewSet(ModelViewSet):
     queryset = PedidoProducto.objects.all()
     serializer_class = PedidoProductoSerializer
-    permission_classes = [IsAdminUser]
+    # permission_classes = [IsAdminUser]
