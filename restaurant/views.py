@@ -6,9 +6,6 @@ from .serializers import IngredienteSerializer, IngredienteSimpleSerializer, Cat
 from rest_framework.permissions import IsAdminUser
 from .permissions import RoleBasedPermission
 
-# Create your views here.
-
-
 class EstadoPedidoViewSet(ModelViewSet):
     queryset = EstadoPedido.objects.all()
     serializer_class = EstadoPedidoSerializer

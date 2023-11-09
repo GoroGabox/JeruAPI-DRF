@@ -50,7 +50,7 @@ class PedidoProductoSerializer(serializers.ModelSerializer):
 class PedidoProductoDetalleSerializer(serializers.ModelSerializer):
     class Meta:
         model = PedidoProducto
-        fields = ['id', 'producto', 'cantidad', 'precio_salida']
+        fields = '__all__'
 
 
 class PedidoSerializer(serializers.ModelSerializer):
