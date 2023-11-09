@@ -54,7 +54,7 @@ class PedidoProductoDetalleSerializer(serializers.ModelSerializer):
 
 
 class PedidoSerializer(serializers.ModelSerializer):
-    productos = PedidoProductoDetalleSerializer(many=True)
+    productos = ProductoSerializer(many=True)
 
     class Meta:
         model = Pedido
