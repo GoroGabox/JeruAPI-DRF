@@ -7,7 +7,6 @@ class EstadoPedidoSerializer(serializers.ModelSerializer):
         model = EstadoPedido
         fields = '__all__'
 
-
 class IngredienteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ingrediente
@@ -18,44 +17,39 @@ class IngredienteSimpleSerializer(serializers.ModelSerializer):
         model = Ingrediente
         fields = ['nombre']
 
-
 class CategoriaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Categoria
         fields = '__all__'
 
-class ProductoIngredienteSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ProductoIngrediente
-        fields = ['nombre', 'cantidad']
-
 class ProductoSerializer(serializers.ModelSerializer):
-    ingredientes = ProductoIngredienteSerializer(many=True)
+    ingredientes = IngredienteSerializer(many=True)
 
     class Meta:
         model = Producto
         fields = '__all__'
-
-class ProductoSimpleSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Producto
-        exclude = ['ingredientes']
-
-class PedidoProductoSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = PedidoProducto
-        fields = '__all__'
-
-class PedidoProductoDetalleSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = PedidoProducto
-        fields = '__all__'
-
 
 class PedidoSerializer(serializers.ModelSerializer):
     productos = ProductoSerializer(many=True)
-
     class Meta:
         model = Pedido
+        fields = '__all__'
+
+class ProductoSimpleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Producto
+        fields = ['nombre']
+
+class ProductoIngredienteSerializer(serializers.ModelSerializer):
+    producto = ProductoSimpleSerializer()
+    ingrediente = IngredienteSimpleSerializer()
+    class Meta:
+        model = ProductoIngrediente
+        fields = '__all__'
+
+class PedidoProductoSerializer(serializers.ModelSerializer):
+    producto = ProductoSerializer()
+    pedido = PedidoSerializer()
+    class Meta:
+        model = PedidoProducto
         fields = '__all__'
