@@ -4,10 +4,11 @@ from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.viewsets import ModelViewSet
-from .models import Ingrediente, Categoria, Producto, ProductoIngrediente, Pedido, PedidoProducto, EstadoPedido
-from .serializers import IngredienteSerializer, IngredienteSimpleSerializer, CategoriaSerializer, ProductoSerializer, ProductoIngredienteSerializer, ProductoSimpleSerializer, PedidoSerializer, PedidoProductoSerializer, EstadoPedidoSerializer
+from .models import Ingrediente, Categoria, Producto, ProductoIngrediente, Pedido, PedidoProducto, EstadoPedido, PedidoDiario
+from .serializers import IngredienteSerializer, IngredienteSimpleSerializer, CategoriaSerializer, ProductoSerializer, ProductoIngredienteSerializer, ProductoSimpleSerializer, PedidoSerializer, PedidoProductoSerializer, EstadoPedidoSerializer, PedidoDiarioSerializer
 from rest_framework.permissions import IsAdminUser
 from .permissions import RoleBasedPermission
+
 
 class EstadoPedidoViewSet(ModelViewSet):
     queryset = EstadoPedido.objects.all()
@@ -76,8 +77,8 @@ class PedidoViewSet(ModelViewSet):
             pedido.productos.set(productos)
 
             return Response(PedidoSerializer(pedido).data, status=status.HTTP_201_CREATED)
-        
-    #Espera recibir los productos como una lista de IDs    
+
+    # Espera recibir los productos como una lista de IDs
     # {
     #     ...
     #     "nombre_cliente": "Nombre del Cliente",
@@ -85,9 +86,11 @@ class PedidoViewSet(ModelViewSet):
     #     "productos": [1, 2, 3]  // Lista de IDs de productos
     # }
 
+
 class PedidoProductoUpdateView(generics.UpdateAPIView):
     queryset = PedidoProducto.objects.all()
     serializer_class = PedidoProductoSerializer
+
 
 class PedidoProductoDeleteView(generics.DestroyAPIView):
     queryset = PedidoProducto.objects.all()
@@ -98,3 +101,8 @@ class PedidoProductoViewSet(ModelViewSet):
     queryset = PedidoProducto.objects.all()
     serializer_class = PedidoProductoSerializer
     # permission_classes = [IsAdminUser]
+
+
+class PedidoDiarioViewSet(ModelViewSet):
+    queryset = PedidoDiario.objects.all()
+    serializer_class = PedidoDiarioSerializer
