@@ -77,7 +77,7 @@ class PedidoDiario(models.Model):
 
 
 class AjusteStock(models.Model):
-    producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
+    ingrediente = models.ForeignKey(Ingrediente, on_delete=models.CASCADE)
     fecha = models.DateTimeField(auto_now_add=True)
     tipo_ajuste = models.CharField(max_length=255)
     cantidad = models.PositiveIntegerField()
@@ -85,4 +85,4 @@ class AjusteStock(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f'{self.producto} {self.tipo_ajuste} {self.cantidad}'
+        return f'{self.ingrediente} {self.tipo_ajuste} {self.cantidad}'
