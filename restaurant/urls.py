@@ -1,6 +1,6 @@
 from django.urls import path
 from rest_framework.routers import DefaultRouter
-from restaurant.views import IngredienteViewSet, IngredienteSimpleViewSet, CategoriaViewSet, ProductoViewSet, ProductoIngredienteViewSet, PedidoViewSet, PedidoProductoViewSet, EstadoPedidoViewSet, ProductoSimpleViewSet, PedidoProductoUpdateView, PedidoProductoDeleteView, PedidoDiarioViewSet
+from restaurant.views import IngredienteViewSet, IngredienteSimpleViewSet, CategoriaViewSet, ProductoViewSet, ProductoIngredienteViewSet, PedidoViewSet, PedidoProductoViewSet, EstadoPedidoViewSet, ProductoSimpleViewSet, PedidoProductoUpdateView, PedidoProductoDeleteView, PedidoDiarioViewSet, AjusteStockViewSet
 
 router = DefaultRouter()
 router.register(r'ingredientes', IngredienteViewSet)
@@ -15,6 +15,7 @@ router.register(r'pedidos', PedidoViewSet)
 router.register(r'pedidos-productos', PedidoProductoViewSet)
 router.register(r'estado-pedido', EstadoPedidoViewSet)
 router.register(r'pedido-diario', PedidoDiarioViewSet)
+router.register(r'ajuste-stock', AjusteStockViewSet)
 
 generics_urls = [
     path('pedidos/<int:pedido_id>/productos/<int:producto_id>/',

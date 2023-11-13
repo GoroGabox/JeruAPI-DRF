@@ -4,8 +4,8 @@ from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.viewsets import ModelViewSet
-from .models import Ingrediente, Categoria, Producto, ProductoIngrediente, Pedido, PedidoProducto, EstadoPedido, PedidoDiario
-from .serializers import IngredienteSerializer, IngredienteSimpleSerializer, CategoriaSerializer, ProductoSerializer, ProductoIngredienteSerializer, ProductoSimpleSerializer, PedidoSerializer, PedidoProductoSerializer, EstadoPedidoSerializer, PedidoDiarioSerializer
+from .models import Ingrediente, Categoria, Producto, ProductoIngrediente, Pedido, PedidoProducto, EstadoPedido, PedidoDiario, AjusteStock
+from .serializers import IngredienteSerializer, IngredienteSimpleSerializer, CategoriaSerializer, ProductoSerializer, ProductoIngredienteSerializer, ProductoSimpleSerializer, PedidoSerializer, PedidoProductoSerializer, EstadoPedidoSerializer, PedidoDiarioSerializer, AjusteStockSerializer
 from rest_framework.permissions import IsAdminUser
 from .permissions import RoleBasedPermission
 
@@ -106,3 +106,9 @@ class PedidoProductoViewSet(ModelViewSet):
 class PedidoDiarioViewSet(ModelViewSet):
     queryset = PedidoDiario.objects.all()
     serializer_class = PedidoDiarioSerializer
+
+
+class AjusteStockViewSet(ModelViewSet):
+    queryset = AjusteStock.objects.all()
+    serializer_class = AjusteStockSerializer
+    # permission_classes = [IsAdminUser]

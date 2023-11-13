@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from restaurant.models import Ingrediente, Categoria, Producto, Pedido, PedidoProducto, EstadoPedido, ProductoIngrediente, PedidoDiario
+from restaurant.models import Ingrediente, Categoria, Producto, Pedido, PedidoProducto, EstadoPedido, ProductoIngrediente, PedidoDiario, AjusteStock
 
 
 class EstadoPedidoSerializer(serializers.ModelSerializer):
@@ -69,4 +69,10 @@ class PedidoProductoSerializer(serializers.ModelSerializer):
 class PedidoDiarioSerializer(serializers.ModelSerializer):
     class Meta:
         model = PedidoDiario
+        fields = '__all__'
+
+
+class AjusteStockSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AjusteStock
         fields = '__all__'
