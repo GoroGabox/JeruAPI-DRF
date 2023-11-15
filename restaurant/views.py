@@ -8,6 +8,7 @@ from .models import Ingrediente, Categoria, Producto, ProductoIngrediente, Pedid
 from .serializers import IngredienteSerializer, IngredienteSimpleSerializer, CategoriaSerializer, ProductoSerializer, ProductoIngredienteSerializer, ProductoSimpleSerializer, PedidoSerializer, PedidoProductoSerializer, EstadoPedidoSerializer, PedidoDiarioSerializer, AjusteStockSerializer
 from rest_framework.permissions import IsAdminUser
 from .permissions import RoleBasedPermission
+from django_filters.rest_framework import DjangoFilterBackend
 
 
 class EstadoPedidoViewSet(ModelViewSet):
@@ -57,6 +58,8 @@ class ProductoIngredienteViewSet(ModelViewSet):
     queryset = ProductoIngrediente.objects.all()
     serializer_class = ProductoIngredienteSerializer
     # permission_classes = [IsAdminUser]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = [ 'producto', 'ingrediente']
 
 
 class PedidoViewSet(ModelViewSet):
@@ -90,17 +93,23 @@ class PedidoViewSet(ModelViewSet):
 class PedidoProductoUpdateView(generics.UpdateAPIView):
     queryset = PedidoProducto.objects.all()
     serializer_class = PedidoProductoSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = [ 'producto', 'pedido']
 
 
 class PedidoProductoDeleteView(generics.DestroyAPIView):
     queryset = PedidoProducto.objects.all()
     serializer_class = PedidoProductoSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = [ 'producto', 'pedido']
 
 
 class PedidoProductoViewSet(ModelViewSet):
     queryset = PedidoProducto.objects.all()
     serializer_class = PedidoProductoSerializer
     # permission_classes = [IsAdminUser]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = [ 'producto', 'pedido']
 
 
 class PedidoDiarioViewSet(ModelViewSet):

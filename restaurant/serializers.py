@@ -27,7 +27,7 @@ class CategoriaSerializer(serializers.ModelSerializer):
 
 
 class ProductoSerializer(serializers.ModelSerializer):
-    ingredientes = IngredienteSerializer(many=True)
+    # ingredientes = IngredienteSerializer(many=True)
 
     class Meta:
         model = Producto
@@ -35,7 +35,7 @@ class ProductoSerializer(serializers.ModelSerializer):
 
 
 class PedidoSerializer(serializers.ModelSerializer):
-    productos = ProductoSerializer(many=True)
+    # productos = ProductoSerializer(many=True)
 
     class Meta:
         model = Pedido
