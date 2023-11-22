@@ -10,7 +10,7 @@ SECRET_KEY = 'django-insecure-geqk-2mu7*ak=8znu*7!7-#n%4^t_c%yya73ntsk(k01y(1o=)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['10.0.2.2', '127.0.0.1', '0.0.0.0']
 
 
 # Application definition
@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'rest_framework',
     'rest_framework_simplejwt',
+    'channels',
     'corsheaders',
     'accounts',
     'restaurant',
@@ -60,8 +61,15 @@ TEMPLATES = [
     },
 ]
 
+
+ASGI_APPLICATION = 'API.asgi.application'
 WSGI_APPLICATION = 'API.wsgi.application'
 
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
