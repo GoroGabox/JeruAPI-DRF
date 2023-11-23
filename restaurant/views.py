@@ -48,6 +48,44 @@ class ProductoViewSet(ModelViewSet):
     serializer_class = ProductoSerializer
     # permission_classes = [RoleBasedPermission]
 
+    @transaction.atomic
+    def create(self, request, *args, **kwargs):
+        response = super().create(request, *args, **kwargs)
+
+        if response.status_code == status.HTTP_201_CREATED:
+            producto = response.data
+
+        ingredientes = request.data.get('ingredientes', None)
+        cantidades = request.data.get('cantidades', None)
+
+        if ingredientes is not None and cantidades is not None:
+            # valida que 'ingredientes' y 'cantidades' tengan la misma cantidad de elementos
+            if len(ingredientes) != len(cantidades):
+                return Response({'error': 'La cantidad de ingredientes y cantidades no coinciden'}, status=status.HTTP_400_BAD_REQUEST)
+
+            # valida que los ingredientes existan
+            for ingrediente in ingredientes:
+                try:
+                    Ingrediente.objects.get(pk=ingrediente)
+                except Ingrediente.DoesNotExist:
+                    return Response({'error': f'El ingrediente con id {ingrediente} no existe'}, status=status.HTTP_400_BAD_REQUEST)
+
+            # valida que las cantidades son floats positivos
+            for cantidad in cantidades:
+                if not isinstance(cantidad, float) or cantidad < 0:
+                    return Response({'error': 'Las cantidades deben ser numeros positivos'}, status=status.HTTP_400_BAD_REQUEST)
+
+            # crea instancias de ProductoIngrediente con cantidades recibidas
+            producto_obj = Producto.objects.get(pk=producto['id'])
+            for ingrediente, cantidad in zip(ingredientes, cantidades):
+                ingrediente = Ingrediente.objects.get(pk=ingrediente)
+                ProductoIngrediente.objects.create(
+                    ingrediente=ingrediente, producto=producto_obj, cantidad=cantidad)
+        else:
+            return Response({'error': "Se esperaban campos 'ingredientes' y 'cantidades'"}, status=status.HTTP_400_BAD_REQUEST)
+
+        return response
+
 
 class ProductoSimpleViewSet(ModelViewSet):
     queryset = Producto.objects.all()
@@ -138,32 +176,32 @@ class PedidoViewSet(ModelViewSet):
     def create_pedido_with_productos(self, request):
         pedido_data = request.data
 
-        # 'mesa' y 'nombre_cliente' son mutuamente excluyentes
-        if 'mesa' in pedido_data and 'nombre_cliente' in pedido_data:
-            Response({'error': 'Se esperaba solo uno de los campos "mesa" o "nombre_cliente"'},
-                     status=status.HTTP_400_BAD_REQUEST)
-
-        # 'productos' y 'cantidades' deben estar presentes
-        if 'productos' not in pedido_data or 'cantidades' not in pedido_data:
-            return Response({'error': "Se esperaban campos 'productos' y 'cantidades'"}, status=status.HTTP_400_BAD_REQUEST)
-        # y por lo menos un par de 'productos' y 'cantidades'
-        elif len(pedido_data['productos']) < 1:
-            return Response({'error': "Se esperaba al menos un producto"}, status=status.HTTP_400_BAD_REQUEST)
-
-        productos_ids = pedido_data.pop('productos')
-        productos_cantidades = pedido_data.pop('cantidades')
-
-        # 'productos' y 'cantidades' deben tener la misma cantidad de elementos
-        if len(productos_ids) != len(productos_cantidades):
-            return Response({'error': 'La cantidad de productos y cantidades no coinciden'}, status=status.HTTP_400_BAD_REQUEST)
-
         # valida datos base de pedido
         serializer = self.get_serializer(data=pedido_data)
         if serializer.is_valid(raise_exception=True):
             pedido = serializer.save()
 
+            # 'mesa' y 'nombre_cliente' son mutuamente excluyentes
+            if 'mesa' in pedido_data and 'nombre_cliente' in pedido_data:
+                Response({'error': 'Se esperaba solo uno de los campos "mesa" o "nombre_cliente"'},
+                         status=status.HTTP_400_BAD_REQUEST)
+
+            # 'productos' y 'cantidades' deben estar presentes
+            if 'productos' not in pedido_data or 'cantidades' not in pedido_data:
+                return Response({'error': "Se esperaban campos 'productos' y 'cantidades'"}, status=status.HTTP_400_BAD_REQUEST)
+            # y por lo menos un par de 'productos' y 'cantidades'
+            elif len(pedido_data['productos']) < 1:
+                return Response({'error': "Se esperaba al menos un producto"}, status=status.HTTP_400_BAD_REQUEST)
+
+            productos = pedido_data.pop('productos')
+            cantidades = pedido_data.pop('cantidades')
+
+            # 'productos' y 'cantidades' deben tener la misma cantidad de elementos
+            if len(productos) != len(cantidades):
+                return Response({'error': 'La cantidad de productos y cantidades no coinciden'}, status=status.HTTP_400_BAD_REQUEST)
+
             # crea instancias de PedidoProducto con cantidades recibidas
-            for producto_id, cantidad in zip(productos_ids, productos_cantidades):
+            for producto_id, cantidad in zip(productos, cantidades):
                 producto = Producto.objects.get(pk=producto_id)
                 PedidoProducto.objects.create(
                     producto=producto, pedido=pedido, cantidad=cantidad)

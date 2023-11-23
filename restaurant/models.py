@@ -15,8 +15,8 @@ class EstadoPedido(models.Model):
 
 class Ingrediente(models.Model):
     nombre = models.CharField(max_length=255)
-    cantidad_disponible = models.PositiveIntegerField()
-    cantidad_critica = models.PositiveIntegerField()
+    cantidad_disponible = models.FloatField()
+    cantidad_critica = models.FloatField()
     unidad = models.CharField(max_length=16)
 
     def __str__(self):
@@ -45,7 +45,7 @@ class Producto(models.Model):
 class ProductoIngrediente(models.Model):
     producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
     ingrediente = models.ForeignKey(Ingrediente, on_delete=models.CASCADE)
-    cantidad = models.PositiveIntegerField()
+    cantidad = models.FloatField()
 
 
 class Pedido(models.Model):
@@ -80,7 +80,7 @@ class AjusteStock(models.Model):
     ingrediente = models.ForeignKey(Ingrediente, on_delete=models.CASCADE)
     fecha = models.DateTimeField(auto_now_add=True)
     tipo_ajuste = models.CharField(max_length=255)
-    cantidad = models.PositiveIntegerField()
+    cantidad = models.FloatField()
     motivo = models.CharField(max_length=255)
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
 
