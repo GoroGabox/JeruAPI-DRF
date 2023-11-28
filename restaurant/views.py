@@ -13,6 +13,7 @@ from .serializers import IngredienteSerializer, IngredienteSimpleSerializer, Cat
 from rest_framework.permissions import IsAdminUser
 from .permissions import RoleBasedPermission
 from django_filters.rest_framework import DjangoFilterBackend
+from django.core.exceptions import ValidationError
 from django.db import transaction
 
 
@@ -48,6 +49,38 @@ class ProductoViewSet(ModelViewSet):
     serializer_class = ProductoSerializer
     # permission_classes = [RoleBasedPermission]
 
+    def list(self, request, *args, **kwargs):
+        productos_data = []
+
+        for producto in self.queryset:
+            producto_data = ProductoSerializer(producto).data
+            producto_ingredientes = ProductoIngrediente.objects.filter(
+                producto=producto)
+            producto_data['ingredientes'] = [
+                pi.ingrediente.id for pi in producto_ingredientes]
+            producto_data['cantidades'] = [
+                pi.cantidad for pi in producto_ingredientes]
+            productos_data.append(producto_data)
+            print(producto_data)
+        print(productos_data)
+        return Response(productos_data, status=status.HTTP_200_OK)
+
+    def retrieve(self, request, *args, **kwargs):
+        try:
+            producto = Producto.objects.get(pk=kwargs['pk'])
+        except Producto.DoesNotExist:
+            return Response({'error': f'El producto no existe'}, status=status.HTTP_404_NOT_FOUND)
+
+        producto_data = ProductoSerializer(producto).data
+        producto_ingredientes = ProductoIngrediente.objects.filter(
+            producto=producto)
+        producto_data['ingredientes'] = [
+            pi.ingrediente.id for pi in producto_ingredientes]
+        producto_data['cantidades'] = [
+            pi.cantidad for pi in producto_ingredientes]
+
+        return Response(producto_data, status=status.HTTP_200_OK)
+
     @transaction.atomic
     def create(self, request, *args, **kwargs):
         response = super().create(request, *args, **kwargs)
@@ -58,31 +91,30 @@ class ProductoViewSet(ModelViewSet):
         ingredientes = request.data.get('ingredientes', None)
         cantidades = request.data.get('cantidades', None)
 
-        if ingredientes is not None and cantidades is not None:
-            # valida que 'ingredientes' y 'cantidades' tengan la misma cantidad de elementos
-            if len(ingredientes) != len(cantidades):
-                return Response({'error': 'La cantidad de ingredientes y cantidades no coinciden'}, status=status.HTTP_400_BAD_REQUEST)
+        if ingredientes is None and cantidades is None:
+            raise ValidationError(
+                "Se esperaban campos 'ingredientes' y 'cantidades'")
 
-            # valida que los ingredientes existan
-            for ingrediente in ingredientes:
-                try:
-                    Ingrediente.objects.get(pk=ingrediente)
-                except Ingrediente.DoesNotExist:
-                    return Response({'error': f'El ingrediente con id {ingrediente} no existe'}, status=status.HTTP_400_BAD_REQUEST)
+        if len(ingredientes) != len(cantidades):
+            raise ValidationError(
+                "La cantidad de ingredientes y cantidades no coinciden")
 
-            # valida que las cantidades son floats positivos
-            for cantidad in cantidades:
-                if not isinstance(cantidad, float) or cantidad < 0:
-                    return Response({'error': 'Las cantidades deben ser numeros positivos'}, status=status.HTTP_400_BAD_REQUEST)
+        for ingrediente in ingredientes:
+            if not Ingrediente.objects.filter(pk=ingrediente).exists():
+                raise ValidationError(
+                    f"El ingrediente con id {ingrediente} no existe")
 
-            # crea instancias de ProductoIngrediente con cantidades recibidas
-            producto_obj = Producto.objects.get(pk=producto['id'])
-            for ingrediente, cantidad in zip(ingredientes, cantidades):
-                ingrediente = Ingrediente.objects.get(pk=ingrediente)
-                ProductoIngrediente.objects.create(
-                    ingrediente=ingrediente, producto=producto_obj, cantidad=cantidad)
-        else:
-            return Response({'error': "Se esperaban campos 'ingredientes' y 'cantidades'"}, status=status.HTTP_400_BAD_REQUEST)
+        for cantidad in cantidades:
+            if not isinstance(cantidad, float) or cantidad < 0:
+                raise ValidationError(
+                    "Las cantidades deben ser numeros positivos")
+
+        # crea instancias de ProductoIngrediente con cantidades recibidas
+        producto_obj = Producto.objects.get(pk=producto['id'])
+        for ingrediente, cantidad in zip(ingredientes, cantidades):
+            ingrediente = Ingrediente.objects.get(pk=ingrediente)
+            ProductoIngrediente.objects.create(
+                ingrediente=ingrediente, producto=producto_obj, cantidad=cantidad)
 
         return response
 
