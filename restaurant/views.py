@@ -50,9 +50,10 @@ class ProductoViewSet(ModelViewSet):
     # permission_classes = [RoleBasedPermission]
 
     def list(self, request, *args, **kwargs):
+        queryset = Producto.objects.all()
         productos_data = []
 
-        for producto in self.queryset:
+        for producto in queryset:
             producto_data = ProductoSerializer(producto).data
             producto_ingredientes = ProductoIngrediente.objects.filter(
                 producto=producto)
@@ -61,8 +62,6 @@ class ProductoViewSet(ModelViewSet):
             producto_data['cantidades'] = [
                 pi.cantidad for pi in producto_ingredientes]
             productos_data.append(producto_data)
-            print(producto_data)
-        print(productos_data)
         return Response(productos_data, status=status.HTTP_200_OK)
 
     def retrieve(self, request, *args, **kwargs):
@@ -115,6 +114,45 @@ class ProductoViewSet(ModelViewSet):
             ingrediente = Ingrediente.objects.get(pk=ingrediente)
             ProductoIngrediente.objects.create(
                 ingrediente=ingrediente, producto=producto_obj, cantidad=cantidad)
+
+        return response
+
+    @transaction.atomic
+    def update(self, request, *args, **kwargs):
+        response = super().update(request, *args, **kwargs)
+
+        if response.status_code == status.HTTP_200_OK:
+            producto = self.get_object()
+
+            ingredientes = request.data.get('ingredientes', None)
+            cantidades = request.data.get('cantidades', None)
+
+            if ingredientes is None and cantidades is None:
+                raise ValidationError(
+                    "Se esperaban campos 'ingredientes' y 'cantidades'")
+
+            if len(ingredientes) != len(cantidades):
+                raise ValidationError(
+                    "La cantidad de ingredientes y cantidades no coinciden")
+
+            for ingrediente in ingredientes:
+                if not Ingrediente.objects.filter(pk=ingrediente).exists():
+                    raise ValidationError(
+                        f"El ingrediente con id {ingrediente} no existe")
+
+            for cantidad in cantidades:
+                if not isinstance(cantidad, float) or cantidad < 0:
+                    raise ValidationError(
+                        "Las cantidades deben ser numeros positivos")
+
+            # elimina todos los ingredientes del producto
+            producto.ingredientes.clear()
+
+            # crea instancias de ProductoIngrediente con cantidades recibidas
+            for ingrediente, cantidad in zip(ingredientes, cantidades):
+                ingrediente = Ingrediente.objects.get(pk=ingrediente)
+                ProductoIngrediente.objects.create(
+                    ingrediente=ingrediente, producto=producto, cantidad=cantidad)
 
         return response
 
