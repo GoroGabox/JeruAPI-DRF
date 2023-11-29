@@ -175,6 +175,9 @@ class PedidoViewSet(ModelViewSet):
     serializer_class = PedidoSerializer
     # permission_classes = [RoleBasedPermission]
 
+    def delete(self, *args, **kwargs):
+        raise Exception("No se puede eliminar un pedido")
+
     @transaction.atomic
     def update(self, request, *args, **kwargs):
         response = super().update(request, *args, **kwargs)

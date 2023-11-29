@@ -31,7 +31,7 @@ class Categoria(models.Model):
 
 
 class Producto(models.Model):
-    categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
+    categoria = models.ForeignKey(Categoria, on_delete=models.PROTECT)
     nombre = models.CharField(max_length=255)
     abreviacion = models.CharField(max_length=10)
     precio = models.PositiveIntegerField()
@@ -44,12 +44,12 @@ class Producto(models.Model):
 
 class ProductoIngrediente(models.Model):
     producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
-    ingrediente = models.ForeignKey(Ingrediente, on_delete=models.CASCADE)
+    ingrediente = models.ForeignKey(Ingrediente, on_delete=models.PROTECT)
     cantidad = models.FloatField()
 
 
 class Pedido(models.Model):
-    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    usuario = models.ForeignKey(User, on_delete=models.PROTECT)
     timestamp = models.DateTimeField(auto_now_add=True)
     estado = models.CharField(max_length=255)
     nombre_cliente = models.CharField(max_length=255, null=True)
@@ -62,7 +62,7 @@ class Pedido(models.Model):
 
 class PedidoProducto(models.Model):
     pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE)
-    producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
+    producto = models.ForeignKey(Producto, on_delete=models.PROTECT)
     cantidad = models.PositiveIntegerField()
     precio_salida = models.DecimalField(
         max_digits=10, decimal_places=2, editable=False)
@@ -77,12 +77,12 @@ class PedidoDiario(models.Model):
 
 
 class AjusteStock(models.Model):
-    ingrediente = models.ForeignKey(Ingrediente, on_delete=models.CASCADE)
+    ingrediente = models.ForeignKey(Ingrediente, on_delete=models.PROTECT)
     fecha = models.DateTimeField(auto_now_add=True)
     tipo_ajuste = models.CharField(max_length=255)
     cantidad = models.FloatField()
     motivo = models.CharField(max_length=255)
-    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    usuario = models.ForeignKey(User, on_delete=models.PROTECT)
 
     def __str__(self):
         return f'{self.ingrediente} {self.tipo_ajuste} {self.cantidad}'
