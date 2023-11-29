@@ -7,3 +7,4 @@ class RestaurantConfig(AppConfig):
 
     def ready(self):
         import restaurant.signals
+        import API.celery

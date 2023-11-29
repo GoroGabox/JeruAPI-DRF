@@ -14,8 +14,7 @@ ALLOWED_HOSTS = ['10.0.2.2',
                  '127.0.0.1',
                  '0.0.0.0',
                  'localhost',
-                 '192.168.0.11',
-                 'enjoyed-forcibly-grubworm.ngrok-free.app']
+                 '192.168.0.11']
 
 
 # Application definition
@@ -27,9 +26,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_apscheduler',
     'django_filters',
     'django_extensions',
+    'django_celery_beat',
     'rest_framework',
     'rest_framework_simplejwt',
     'channels',
@@ -153,4 +152,17 @@ REST_FRAMEWORK = {
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(hours=1),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+}
+
+# CELERY
+
+DJANGO_SETTINGS_MODULE = 'API.settings'
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/1'
+CELERY_TIMEZONE = 'America/Santiago'
+CELERY_BEAT_SCHEDULE = {
+    'reset_pedido_diario': {
+        'task': 'restaurant.tasks.reset_pedido_diario',
+        'schedule': timedelta(hours=24),
+    },
 }
