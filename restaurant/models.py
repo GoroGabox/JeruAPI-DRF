@@ -62,7 +62,7 @@ class Pedido(models.Model):
 
 class PedidoProducto(models.Model):
     pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE)
-    producto = models.ForeignKey(Producto, on_delete=models.PROTECT)
+    producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
     cantidad = models.PositiveIntegerField()
     precio_salida = models.DecimalField(
         max_digits=10, decimal_places=2, editable=False)
