@@ -86,3 +86,13 @@ class AjusteStock(models.Model):
 
     def __str__(self):
         return f'{self.ingrediente} {self.tipo_ajuste} {self.cantidad}'
+
+    def save(self, *args, **kwargs):
+        if self.tipo_ajuste == 'RESTA':
+            if self.ingrediente.cantidad_disponible - self.cantidad < 0:
+                raise ValueError('No hay suficiente stock')
+            else:
+                self.ingrediente.cantidad_disponible -= self.cantidad
+                self.ingrediente.save()
+
+        super(AjusteStock, self).save(*args, **kwargs)

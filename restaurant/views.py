@@ -244,10 +244,24 @@ class PedidoViewSet(ModelViewSet):
 
         return response
 
+    def revisar_stock(self, productos, cantidades):
+        for producto_id, cantidad in zip(productos, cantidades):
+            producto = Producto.objects.get(pk=producto_id)
+            for producto_ingrediente in producto.productoingrediente_set.all():
+                cantidad_requerida = producto_ingrediente.cantidad * cantidad
+                if producto_ingrediente.ingrediente.cantidad_disponible < cantidad_requerida:
+                    return False
+        return True
+
     @transaction.atomic
     @action(detail=False, methods=['POST'])
     def create_pedido_with_productos(self, request):
         pedido_data = request.data
+        productos = pedido_data.get('productos')
+        cantidades = pedido_data.get('cantidades')
+
+        if not self.revisar_stock(productos, cantidades):
+            return Response({'error': 'No hay suficiente stock para este pedido'}, status=status.HTTP_400_BAD_REQUEST)
 
         # valida datos base de pedido
         serializer = self.get_serializer(data=pedido_data)
